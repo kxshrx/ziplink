@@ -37,6 +37,7 @@ A minimal FastAPI-based URL shortener with user authentication and management.
   - `auth.py` – User registration, login, JWT authentication.
   - `users.py` – User profile and password management.
   - `urls.py` – Create, fetch, and redirect short URLs.
+  - `admin.py` – (Reserved for admin features, currently empty.)
 
 ## Workflow Overview
 
