@@ -25,10 +25,10 @@ user_dependency  = Annotated[dict  , Depends(get_current_user)]
 @router.get('/urls',status_code=status.HTTP_200_OK)
 async def fetch_all_urls(user:user_dependency, db:db_dependency):
     if user is None or user.get('role') != 'admin':
-        raise HTTPException(satus_code=status.HTTP_401_UNAUTHORIZED)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     return db.query(Urls).all()
 
-@router.delete('/ur;s/{short_code}', status_code=status.HTTP_200_OK)
+@router.delete('/urls/{short_code}', status_code=status.HTTP_200_OK)
 async def delete_url(user:user_dependency, db:db_dependency, short_code:str):
     if user is None or user.get('role') != 'admin':
         raise HTTPException(satus_code=status.HTTP_401_UNAUTHORIZED)
@@ -41,14 +41,14 @@ async def delete_url(user:user_dependency, db:db_dependency, short_code:str):
 
 
 @router.get('/users', status_code=status.HTTP_200_OK)
-async def fetch_all_urls(user: user_dependency, db: db_dependency):
+async def fetch_all_users(user: user_dependency, db: db_dependency):
     if user is None or user.get('role') != 'admin':
         raise HTTPException(satus_code=status.HTTP_401_UNAUTHORIZED)
     return db.query(Users).all()
 
 
 @router.delete('/users/{userid}', status_code=status.HTTP_200_OK)
-async def delete_url(user: user_dependency, db: db_dependency, userid: int):
+async def delete_user(user: user_dependency, db: db_dependency, userid: int):
     if user is None or user.get('role') != 'admin':
         raise HTTPException(satus_code=status.HTTP_401_UNAUTHORIZED)
     rec_to_del = db.query(Users).filter(Users.id == userid).first()

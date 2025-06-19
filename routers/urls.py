@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Urls
 from routers.auth import get_current_user
+from fastapi.responses import RedirectResponse
 
 router = APIRouter(
     prefix='/urls',
@@ -72,13 +73,19 @@ async def see_all_urls(user:user_dependency,db:db_dependency):
     return db.query(Urls).filter(Urls.owner_id==user.get('id')).all()
 
 
-@router.get('/{short_code}', response_model=FetchShortResponseSchema, status_code=status.HTTP_200_OK)
-async def fetch_long_url(db:db_dependency, short_code:str):
-    req_url = db.query(Urls).filter(Urls.short_code==short_code).first()
+
+
+@router.get('/{short_code}')
+async def redirect_to_long_url(db: db_dependency, short_code: str):
+    req_url = db.query(Urls).filter(Urls.short_code == short_code).first()
+
     if req_url is None:
-        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
     increment_access_count(short_code, db)
-    return req_url
+
+    return RedirectResponse(url=req_url.url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=CreatedReponseSchema)
 async def shorten_url(user:user_dependency,db: db_dependency, urlreq: CreateRequestSchema):
