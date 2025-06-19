@@ -1,36 +1,59 @@
 # URL Shortener
 
-A simple URL shortener service built with FastAPI and SQLite.
+A minimal FastAPI-based URL shortener with user authentication and management.
 
-## Features
-- Shorten long URLs
-- Redirect to original URLs
-- Admin and user management
+## Quick Start
 
-## Project Structure
-- `main.py`: FastAPI app entry point
-- `database.py`: Database setup and connection
-- `models.py`: SQLAlchemy models
-- `routers/`: API route modules (admin, urls, users)
-
-## Setup
-1. Create and activate a virtual environment:
+1. **Clone the repo and set up a virtual environment:**
    ```sh
    python3 -m venv urlvenv
    source urlvenv/bin/activate
+   pip install -r requirements.txt
    ```
-2. Install dependencies:
-   ```sh
-   pip install fastapi uvicorn sqlalchemy python-dotenv
-   ```
-3. Run the application:
+
+2. **Set up environment variables:**
+   - Create a `.env` file in the project root.
+   - Generate a secure secret key:
+     ```sh
+     openssl rand -hex 32
+     ```
+   - Example `.env`:
+     ```
+     SECRET_KEY=your_generated_key
+     ALGORITHM=HS256
+     ```
+
+3. **Run the app:**
    ```sh
    uvicorn main:app --reload
    ```
 
-## Notes
-- The SQLite database file (`url.db`) is ignored by git.
-- Environment variables can be set in a `.env` file (also gitignored).
+## Project Structure
+
+- `main.py` – FastAPI entry point, includes routers for URLs, users, and auth.
+- `database.py` – SQLAlchemy setup for SQLite.
+- `models.py` – User and URL models.
+- `routers/` – API endpoints:
+  - `auth.py` – User registration, login, JWT authentication.
+  - `users.py` – User profile and password management.
+  - `urls.py` – Create, fetch, and redirect short URLs.
+
+## Workflow Overview
+
+- **Auth:**  
+  Users register and log in. JWT tokens are used for authentication. Passwords are securely hashed.
+
+- **Users:**  
+  Authenticated users can view their profile and update their password.
+
+- **URLs:**  
+  Authenticated users can shorten URLs. Each short URL is unique and tracks access count. Redirection is handled via the short code.
+
+## Tips
+
+- Use `openssl rand -hex 32` to generate a strong secret key for your `.env`.
+- The SQLite database (`url.db`) and environment files are gitignored for safety.
 
 ## License
+
 MIT
