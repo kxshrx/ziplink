@@ -551,7 +551,7 @@ def render_auth_page():
     <div class="footer">
         <p>© 2024 ZipLink - Professional URL Management Platform</p>
         <p style="margin-top: 0.5rem;">
-            <a href="https://github.com/kxshrx/url-shortener" style="color: {COLORS['primary']}; text-decoration: none;">GitHub Repository</a> | 
+            <a href="https://github.com/kxshrx/ziplink.git" style="color: {COLORS['primary']}; text-decoration: none;">GitHub Repository</a> | 
             <a href="https://fastapi.tiangolo.com/" style="color: {COLORS['primary']}; text-decoration: none;">FastAPI Docs</a> | 
             <a href="mailto:support@ziplink.com" style="color: {COLORS['primary']}; text-decoration: none;">Support</a>
         </p>
@@ -599,7 +599,7 @@ def render_sidebar():
         <div style="margin-top: 1rem;">
             <p style="color: {COLORS['muted']}; font-size: 0.9rem; margin-bottom: 0.5rem;">Resources:</p>
             <a href="http://localhost:8000/docs" style="color: {COLORS['primary']}; text-decoration: none; font-size: 0.9rem;">📚 API Documentation</a><br>
-            <a href="https://github.com/kxshrx/url-shortener" style="color: {COLORS['primary']}; text-decoration: none; font-size: 0.9rem;">🔧 GitHub Repository</a><br>
+            <a href="https://github.com/kxshrx/ziplink.git" style="color: {COLORS['primary']}; text-decoration: none; font-size: 0.9rem;">🔧 GitHub Repository</a><br>
             <a href="mailto:support@ziplink.com" style="color: {COLORS['primary']}; text-decoration: none; font-size: 0.9rem;">💬 Support</a>
         </div>
         """, unsafe_allow_html=True)
