@@ -142,3 +142,5 @@ A professional, minimal FastAPI-based URL shortener with user authentication, JW
 ## License
 
 MIT
+
+https://roadmap.sh/projects/url-shortening-service
