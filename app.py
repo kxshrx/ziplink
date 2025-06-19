@@ -222,6 +222,8 @@ def init_session_state():
         st.session_state.confirm_delete_user = None
     if 'confirm_delete_url' not in st.session_state:
         st.session_state.confirm_delete_url = None
+    if 'edit_url' not in st.session_state:
+        st.session_state.edit_url = None
 
 
 # API Helper Functions
@@ -341,6 +343,7 @@ def logout_user():
     st.session_state.current_page = 'Dashboard'
     st.session_state.confirm_delete_user = None
     st.session_state.confirm_delete_url = None
+    st.session_state.edit_url = None
 
 
 # UI Components
@@ -649,9 +652,9 @@ def render_dashboard():
                          "You haven't created any short URLs yet. Go to URL Management to create your first one!")
 
 
-# URL Management Page
+# URL Management Page - Updated with Edit Functionality
 def render_url_management():
-    """Render URL management page"""
+    """Render URL management page with edit functionality"""
     st.markdown("# URL Management")
     st.markdown("Create, edit, and manage your short URLs")
 
@@ -692,19 +695,63 @@ def render_url_management():
 
         if urls:
             for url_data in urls:
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    render_url_item(url_data)
-                with col2:
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    if st.button("Delete", key=f"del_{url_data['short_code']}", type="secondary"):
-                        # Delete URL
-                        del_response = make_api_request(f"/urls/{url_data['short_code']}", method='DELETE')
-                        if del_response and del_response.status_code == 200:
-                            render_success_alert("URL deleted successfully")
+                short_code = url_data['short_code']
+
+                # Check if this URL is being edited
+                if st.session_state.edit_url == short_code:
+                    st.markdown(f"### Editing: {short_code}")
+                    with st.form(f"edit_form_{short_code}"):
+                        new_long_url = st.text_input("New Long URL", value=url_data.get('url', ''),
+                                                     placeholder="https://example.com/new-url")
+                        col1, col2, col3 = st.columns([2, 1, 1])
+                        with col1:
+                            update_url = st.form_submit_button("Update URL", use_container_width=True)
+                        with col2:
+                            cancel_edit = st.form_submit_button("Cancel", use_container_width=True)
+
+                        if update_url and new_long_url:
+                            if not new_long_url.startswith(('http://', 'https://')):
+                                render_error_alert("Please enter a valid URL starting with http:// or https://")
+                            else:
+                                # API call to update URL
+                                data = {'long_url': new_long_url}
+                                update_response = make_api_request(f"/urls/{short_code}", method='PUT', data=data)
+
+                                if update_response and update_response.status_code == 200:
+                                    render_success_alert(f"URL {short_code} updated successfully!")
+                                    st.session_state.edit_url = None
+                                    st.rerun()
+                                elif update_response:
+                                    error_detail = update_response.json().get('detail', 'Failed to update URL')
+                                    render_error_alert(f"Failed to update URL: {error_detail}")
+                                else:
+                                    render_error_alert("Failed to update URL. Please check your connection.")
+
+                        if cancel_edit:
+                            st.session_state.edit_url = None
                             st.rerun()
-                        else:
-                            render_error_alert("Failed to delete URL")
+                else:
+                    # Normal display with action buttons
+                    col1, col2 = st.columns([4, 1])
+                    with col1:
+                        render_url_item(url_data)
+                    with col2:
+                        st.markdown("<br>", unsafe_allow_html=True)
+
+                        # Edit button
+                        if st.button("✏️ Edit", key=f"edit_{short_code}", help="Edit this URL"):
+                            st.session_state.edit_url = short_code
+                            st.rerun()
+
+                        # Delete button
+                        if st.button("🗑️ Delete", key=f"del_{short_code}", type="secondary", help="Delete this URL"):
+                            # Delete URL
+                            del_response = make_api_request(f"/urls/{short_code}", method='DELETE')
+                            if del_response and del_response.status_code == 200:
+                                render_success_alert("URL deleted successfully")
+                                st.rerun()
+                            else:
+                                render_error_alert("Failed to delete URL")
         else:
             render_info_card("No URLs Found", "You haven't created any short URLs yet. Create your first one above!")
     elif response and response.status_code == 401:
